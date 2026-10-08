@@ -29,58 +29,49 @@ export default function UpsellRFEF({ onAccept, onDecline }: UpsellRFEFProps) {
   // HOTMART - Sales Funnel Widget
   // script load and setup
   useEffect(() => {
-    let checkInterval: any = null;
+    let mounted = false;
 
-    const mountHotmart = () => {
-      const container = document.getElementById('hotmart-sales-funnel');
+    const initSalesFunnel = () => {
+      if (mounted) return;
       const checkoutElements = (window as any).checkoutElements;
-      
+      const container = document.getElementById('hotmart-sales-funnel');
       if (checkoutElements && container) {
         try {
-          if (!container.querySelector('iframe')) {
-            checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel');
-          }
-          return true;
+          checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel');
+          mounted = true;
         } catch (err) {
-          console.error("Error initializing Hotmart widget:", err);
+          console.error("Error initializing Hotmart sales funnel widget:", err);
         }
       }
-      return false;
     };
 
-    // Ensure Hotmart checkout script is present in DOM
-    let script = document.querySelector('script[src="https://checkout.hotmart.com/lib/hotmart-checkout-elements.js"]') as HTMLScriptElement;
-    if (!script) {
-      script = document.createElement('script');
-      script.src = 'https://checkout.hotmart.com/lib/hotmart-checkout-elements.js';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-    
-    const handleLoad = () => mountHotmart();
-    script.addEventListener('load', handleLoad);
+    if ((window as any).checkoutElements) {
+      initSalesFunnel();
+    } else {
+      let script = document.querySelector(
+        'script[src="https://checkout.hotmart.com/lib/hotmart-checkout-elements.js"]'
+      ) as HTMLScriptElement;
 
-    // Initial attempt
-    mountHotmart();
-
-    // Verify and poll until iframe is mounted
-    checkInterval = setInterval(() => {
-      const container = document.getElementById('hotmart-sales-funnel');
-      if (container && container.querySelector('iframe')) {
-        clearInterval(checkInterval);
-      } else {
-        mountHotmart();
+      if (!script) {
+        script = document.createElement('script');
+        script.src = 'https://checkout.hotmart.com/lib/hotmart-checkout-elements.js';
+        script.async = true;
+        document.head.appendChild(script);
       }
-    }, 250);
 
-    const timeout = setTimeout(() => {
-      if (checkInterval) clearInterval(checkInterval);
-    }, 10000);
+      script.addEventListener('load', () => {
+        initSalesFunnel();
+      }, { once: true });
+    }
+
+    const timer = setTimeout(() => {
+      if (!mounted) {
+        initSalesFunnel();
+      }
+    }, 500);
 
     return () => {
-      script.removeEventListener('load', handleLoad);
-      if (checkInterval) clearInterval(checkInterval);
-      clearTimeout(timeout);
+      clearTimeout(timer);
     };
   }, []);
 
