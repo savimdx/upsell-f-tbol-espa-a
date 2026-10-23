@@ -232,8 +232,8 @@ export default function UpsellRFEF({ onAccept, onDecline }: UpsellRFEFProps) {
                   ACCESO PRIVILEGIADO HOY:
                 </span>
                 <div className="flex items-center justify-center text-[#FF5500] font-['Montserrat','Arial_Black',sans-serif] drop-shadow-[0_4px_14px_rgba(255,85,0,0.22)] py-2 whitespace-nowrap">
-                  <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-[900] tracking-tight leading-none">
-                    $6.90
+                  <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-[900] tracking-tight leading-none">
+                    US$ 6.90
                   </span>
                 </div>
                 <span className="text-xs sm:text-sm font-medium text-slate-600 -mt-1 mb-0.5">
